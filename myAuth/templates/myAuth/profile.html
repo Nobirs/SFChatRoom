@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+    <p>Username: {{user.username}}</p>
+    <form method="POST">
+        {% csrf_token %}
+        {{ usernameform.as_table }}
+        <button type="submit">Update</button>
+    </form>
+    {% if icon %}
+        <img alt="64x64" style="width: 50px; height: 50px;" src="{{ icon.url }}">
+<!--        <img src="{{ icon.url }}" alt="User icon"/>-->
+    {% endif %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.user_icon_path }}
+            <input type="hidden" name="user_id" required="" id="id_user_id" value="{{user.id}}"/>
+            <button type="submit">Upload</button>
+        </form>
+    <a href="{% url 'home' %}">Home page</a>
+</body>
+</html>

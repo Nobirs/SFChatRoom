@@ -1,0 +1,132 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+</head>
+<body>
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <link href="{% static 'styles.css' %}" rel="stylesheet">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="btn-panel btn-panel-conversation">
+<!--                    <input type="text" id="new_room"/>-->
+<!--                    <a href="" class="btn  col-lg-6  send-message-btn pull-right" role="button"><i class="fa fa-plus"></i> New ChatRoom</a>-->
+                </div>
+            </div>
+
+            <div class="col-lg-offset-1 col-lg-7">
+<!--                <select name="available_rooms" id="room_selector">-->
+<!--                        <option value="global" selected>Global</option>-->
+<!--                        {% if available_rooms %}-->
+<!--                        {% for room in available_rooms %}-->
+<!--                            {% if room.name != "global" %}-->
+<!--                                <option value="{{room.name}}">{{room.name}}</option>-->
+<!--                            {% endif %}-->
+<!--                        {% endfor %}-->
+<!--                        {% endif %}-->
+<!--                    </select>-->
+                <div class="btn-panel btn-panel-msg">
+                    {{ chat_name|json_script:"chat-name" }}
+                    {{ request.user.username|json_script:"current-username" }}
+
+                    <p id="chat_name" class="col-lg-3 pull-center">global</p>
+
+                    <a href="{% url 'logout' %}" class="btn  col-lg-3  send-message-btn pull-right" role="button"><i class="fa fa-gears">Logout</i></a>
+                    <a href="{% url 'myLogin' %}" class="btn  col-lg-3  send-message-btn pull-right" role="button"><i class="fa fa-gears">Change User</i></a>
+                    <a href="{% url 'profile' pk=request.user.id %}" class="btn  col-lg-3  send-message-btn pull-right" role="button"><i class="fa fa-gears">Profile</i></a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-lg-3">
+                {% load filters %}
+                <div class="conversation-wrap" style="max-height: 250px; overflow-y: scroll; background-image: url({{users|dIconPath:request.user.username}});">
+                    {% load filters %}
+                {% for name, icon in users.items %}
+                <div class="media conversation">
+                    <a class="pull-left" href="#">
+                        <img id="{{ name }}_image" username="{{name}}" user_id="{{ users_id|dkey:name }}" class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 50px; height: 50px;" src="{{ icon.user_icon_path.url }}">
+                    </a>
+                    <div class="media-body">
+                        <h5 class="media-heading" style="color: white;">{{ name }}</h5>
+                    </div>
+                    {% if name != request.user.username %}
+                        <button id="{{name}}_chat_btn" username="{{name}}" class="pull-right" href="" type="button">Open chat</button>
+                    {% else %}
+                        <h5 id="current_user" class="pull-right" style="color: red;">Current user</h5>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                </div>
+
+                <div style="height:20px;"></div>
+
+                <div>
+                    <input type="text" id="new_room_input"/>
+                    <a id="new_room_button" class="btn send-message-btn" role="button"><i class="fa fa-plus"></i> New ChatRoom</a>
+                </div>
+
+                <div id="rooms_container" class="conversation-wrap" style="max-height: 250px; overflow-y: scroll; background-image: url(/media/icons/rabbit.jpg);">
+                    {% if available_rooms %}
+                        {% for room in available_rooms %}
+                            <div class="media conversation">
+                            <div class="media-body">
+                                <h5 class="media-heading" style="color: white;">{{ room.name }}</h5>
+                            </div>
+                            {% if room.name != chat_name %}
+                                <button id="{{room.name}}_chat_btn" roomname="{{room.name}}" class="pull-right">Open room</button>
+                            {% else %}
+                                <button id="{{room.name}}_chat_btn" roomname="{{room.name}}" class="pull-right" disabled>Current room</button>
+                            {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+            </div>
+
+
+            <div class="message-wrap col-lg-8">
+                <div id="messages_container" class="msg-wrap" style="max-height:500px; overflow-y:scroll;">
+                    {% if messages %}
+                    {% load filters %}
+                    {% for message in messages %}
+                        <div class="media msg">
+                            <a class="pull-left" href="#">
+                                <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 32px; height: 32px;" src="{{ users|dIconPath:message.from_user.username }}">
+                            </a>
+                            <div class="media-body">
+                                <small class="pull-right time"><i class="fa fa-clock-o"></i>{{ message.time_added|date:"g:i a" }}</small>
+
+                                <h5 class="media-heading">{{ message.from_user.username }}</h5>
+                                <small class="col-lg-10">{{ message.message }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% endif %}
+                </div>
+                <div class="send-wrap ">
+
+                    <textarea id="message_text" class="form-control send-message" rows="3" placeholder="Write a reply..."></textarea>
+
+
+                </div>
+                <div class="btn-panel">
+                    <button id="send_button" href="" class=" col-lg-4 text-right btn   send-message-btn pull-right" role="button"><i class="fa fa-plus"></i> Send Message</button>
+                </div>
+        </div>
+    </div>
+
+    </div>
+    <script src="{% static 'main_script.js' %}"></script>
+
+</body>
+</html>
